@@ -81,3 +81,25 @@ A alteração no prompt focada em incluir uma etapa explícita de `Validação` 
 No entanto, os novos testes revelaram fragilidades semânticas: o modelo confundiu o pedido de redefinição de senha com `FINANCEIRO`, errou o tratamento de negação lógica em "Não estou com problema..." e confundiu uma das categorias do teste adversarial com a classificação `FINANCEIRO`. 
 
 Isso conclui que regras estritas de prompt resolvem o problema de sintaxe e contrato (conformidade), mas a acurácia semântica ainda encontra gargalos pesados em nuances lógicas quando usando modelos menores, exigindo talvez refinamento maior do pronpt detalhando palavras-chaves e inserindo regras mais diretas e eficientes.
+
+---
+
+## Feature 4 — Identificação de informações ausentes
+
+Foi implementada a nova funcionalidade que analisa o texto do chamado e identifica quais informações estão faltando para iniciar o atendimento.
+A implementação preservou a arquitetura existente, validando as entradas e saídas e adicionando o endpoint `POST /chamados/informacoes-ausentes`.
+
+**Como testar as regras unitárias (sem modelo):**
+```bash
+docker compose exec backend npm run test -- informacoes-ausentes
+```
+
+**Como testar os cenários com o Ollama real:**
+Foi disponibilizado o arquivo `testes-ausentes.http` na raiz do projeto com os 5 cenários obrigatórios. Você pode executá-los utilizando a extensão REST Client no VSCode ou através de requisições `curl`.
+
+Exemplo - Cenário 1 (Chamado Completo):
+```bash
+curl -X POST http://localhost:3000/chamados/informacoes-ausentes \
+  -H "Content-Type: application/json" \
+  -d '{"texto":"Não consigo acessar o SIGAA desde hoje às 08h. Estou usando o navegador Chrome no computador do laboratório."}'
+```
