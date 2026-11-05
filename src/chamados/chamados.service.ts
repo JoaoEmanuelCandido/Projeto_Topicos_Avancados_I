@@ -1,52 +1,46 @@
-import { BadGatewayException, Inject, Injectable } from '@nestjs/common';
+import {
+  BadGatewayException,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import {
   MODELO_PROVIDER,
-  ModeloProvider,
+  type ModeloProvider,
 } from '../ia/providers/modelo.provider';
-import { ChamadoCategoria } from './chamado-categoria';
-import { ClassificarChamadoDto } from './dto/classificar-chamado.dto';
+import {
+  isChamadoCategoria,
+  type ChamadoCategoria,
+} from './chamado-categoria';
+import { buildClassificacaoPrompt } from './classificacao.prompt';
+
+export interface ClassificacaoResultado {
+  texto: string;
+  categoria: ChamadoCategoria;
+  modelo: string;
+}
 
 @Injectable()
 export class ChamadosService {
   constructor(
     @Inject(MODELO_PROVIDER)
-    private readonly modeloProvider: ModeloProvider,
+    private readonly modelo: ModeloProvider,
   ) { }
 
-  async classificar(dto: ClassificarChamadoDto) {
-    const prompt = `
+  async classificar(textoOriginal: string): Promise<ClassificacaoResultado> {
+    const texto = textoOriginal.trim();
+    const prompt = buildClassificacaoPrompt(texto);
+    const resultado = await this.modelo.gerar({ mensagem: prompt });
+    const categoria = resultado.resposta.trim().toUpperCase();
 
-Classifique o seguinte chamado em APENAS UMA das categorias permitidas: 
-
-    ACESSO;
-    FINANCEIRO; 
-    MATRICULA;
-    DOCUMENTOS;
-    OUTROS.
-
-Não forneça NENHUMA explicação adicional, não use aspas ou pontos finais. Apenas o nome exato da categoria.
-
-ATENÇÃO A GRAFIA: Coloque a resposta exatamente da forma dessas palvras, sem mudar nem uma letra.
-
-Texto do chamado: "${dto.texto}"`;
-
-    const resultado = await this.modeloProvider.gerar({ mensagem: prompt });
-
-    // Normalizar a resposta removendo espaços e caracteres indevidos.
-    const categoriaRecebida = resultado.resposta
-      .toUpperCase()
-      .trim()
-      .replace(/[^A-Z]/g, '');
-
-    const categoriasValidas = Object.values(ChamadoCategoria) as string[];
-
-    if (!categoriasValidas.includes(categoriaRecebida)) {
-      throw new BadGatewayException('O modelo retornou uma categoria inválida');
+    if (!isChamadoCategoria(categoria)) {
+      throw new BadGatewayException(
+        'O modelo retornou uma categoria inválida',
+      );
     }
 
     return {
-      texto: dto.texto,
-      categoria: categoriaRecebida,
+      texto,
+      categoria,
       modelo: resultado.modelo,
     };
   }

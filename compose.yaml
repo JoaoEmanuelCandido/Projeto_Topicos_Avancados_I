@@ -10,6 +10,7 @@ services:
       - ollama-data:/root/.ollama
 
   frontend:
+    container_name: aplication_ollama_frontend
     build:
       context: ./frontend
     user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
@@ -23,7 +24,7 @@ services:
 
   backend:
     image: node:20-alpine
-    container_name: implementacao_contexto_backend
+    container_name: aplication_ollama_backend
     user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
     working_dir: /app
     environment:
