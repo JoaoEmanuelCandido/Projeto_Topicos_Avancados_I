@@ -12,6 +12,7 @@ describe('IaService', () => {
   beforeEach(async () => {
     provider = {
       gerar: jest.fn(),
+      gerarStream: jest.fn(),
     };
 
     const moduleRef = await Test.createTestingModule({
