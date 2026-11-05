@@ -5,15 +5,20 @@ import {
   HttpStatus,
   Post,
   Res,
+  UploadedFile,
+  UseInterceptors,
   ServiceUnavailableException,
 } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
 import type { Response } from 'express';
+import { memoryStorage } from 'multer';
+import { AnalisarArquivoDto } from './dto/analisar-arquivo.dto';
 import { ResponderDto } from './dto/responder.dto';
 import { IaService } from './ia.service';
 
 @Controller('ia')
 export class IaController {
-  constructor(private readonly iaService: IaService) {}
+  constructor(private readonly iaService: IaService) { }
 
   @Post('responder')
   @HttpCode(HttpStatus.OK)
@@ -76,5 +81,22 @@ export class IaController {
         'Não foi possível iniciar a geração',
       );
     }
+  }
+
+  @Post('analisar-arquivo')
+  @UseInterceptors(
+    FileInterceptor('arquivo', {
+      storage: memoryStorage(),
+      limits: {
+        fileSize: 5 * 1024 * 1024,
+        files: 1,
+      },
+    }),
+  )
+  analisarArquivo(
+    @Body() dto: AnalisarArquivoDto,
+    @UploadedFile() arquivo?: Express.Multer.File,
+  ) {
+    return this.iaService.analisarArquivo(dto.prompt, arquivo);
   }
 }

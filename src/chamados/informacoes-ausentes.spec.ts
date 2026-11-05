@@ -11,6 +11,7 @@ describe('ChamadosService - informações ausentes', () => {
       }),
       gerarStream: jest.fn(),
       conversar: jest.fn(),
+      analisarArquivo: jest.fn(),
     };
   }
 

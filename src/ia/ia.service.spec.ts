@@ -14,6 +14,7 @@ describe('IaService', () => {
       gerar: jest.fn(),
       gerarStream: jest.fn(),
       conversar: jest.fn(),
+      analisarArquivo: jest.fn(),
     };
 
     const moduleRef = await Test.createTestingModule({
