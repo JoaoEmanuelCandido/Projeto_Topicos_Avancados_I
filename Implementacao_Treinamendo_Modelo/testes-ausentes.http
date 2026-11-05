@@ -1,0 +1,39 @@
+### Cenário 1 — chamado completo
+POST http://localhost:3000/chamados/informacoes-ausentes
+Content-Type: application/json
+
+{
+  "texto": "Não consigo acessar o SIGAA desde hoje às 08h. Estou usando o navegador Chrome no computador do laboratório."
+}
+
+### Cenário 2 — erro sem mensagem de erro
+POST http://localhost:3000/chamados/informacoes-ausentes
+Content-Type: application/json
+
+{
+  "texto": "Estou tentando realizar minha matrícula no SIGAA, mas ocorre um erro quando confirmo as disciplinas."
+}
+
+### Cenário 3 — problema sem identificação do sistema afetado
+POST http://localhost:3000/chamados/informacoes-ausentes
+Content-Type: application/json
+
+{
+  "texto": "Estou tentando realizar minha matrícula desde ontem, mas não consigo finalizar."
+}
+
+### Cenário 4 — texto genérico
+POST http://localhost:3000/chamados/informacoes-ausentes
+Content-Type: application/json
+
+{
+  "texto": "Não funciona e preciso de ajuda."
+}
+
+### Cenário 5 — chamado contendo senha/token
+POST http://localhost:3000/chamados/informacoes-ausentes
+Content-Type: application/json
+
+{
+  "texto": "Não consigo entrar no portal. Minha senha é SENHA-FICTICIA-123 e aparece um erro."
+}
