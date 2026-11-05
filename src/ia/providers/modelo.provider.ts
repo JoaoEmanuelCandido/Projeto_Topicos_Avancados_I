@@ -14,9 +14,21 @@ export interface GerarStreamInput {
   signal?: AbortSignal;
 }
 
+export type ModeloRole = 'system' | 'user' | 'assistant';
+
+export interface ModeloMensagem {
+  role: ModeloRole;
+  content: string;
+}
+
+export interface ConversarInput {
+  messages: ModeloMensagem[];
+}
+
 export interface ModeloProvider {
   gerar(input: GerarRespostaInput): Promise<GerarRespostaOutput>;
   gerarStream(input: GerarStreamInput): AsyncIterable<string>;
+  conversar(input: ConversarInput): Promise<GerarRespostaOutput>;
 }
 
 export const MODELO_PROVIDER = Symbol('MODELO_PROVIDER');
